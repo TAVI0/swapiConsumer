@@ -54,7 +54,6 @@ public class PeopleServiceImp implements PeopleService {
 
     @Override
     public List<PersonDTO> getPeople(int page, int limit) {
-
         String url = swapiBaseUrl + "people/?page=" + page + "&limit=" + limit;
         try {
             ResponseEntity<SwapiPeopleShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPeopleShortResponse.class);
@@ -76,8 +75,6 @@ public class PeopleServiceImp implements PeopleService {
         String url = swapiBaseUrl + "people/?name=" + name;
         try {
             ResponseEntity<SwapiPeopleResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPeopleResponse.class);
-            ResponseEntity<String> responseString = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            System.out.println(responseString.getBody());
             SwapiPeopleResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
