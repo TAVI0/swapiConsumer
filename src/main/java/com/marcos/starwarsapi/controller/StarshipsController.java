@@ -26,7 +26,9 @@ public class StarshipsController {
         this.starshipsService = starshipsService;
     }
 
-    @Operation(summary = "Obtener una nave espacial por su ID")
+    @Operation(
+        summary = "Obtener una nave espacial por su ID",
+        description = "Retorna una nave espacial correspondiente al ID proporcionado.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Nave encontrada",
             content = @Content(mediaType = "application/json",
@@ -45,7 +47,9 @@ public class StarshipsController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Buscar naves por nombre")
+    @Operation(
+        summary = "Buscar naves por nombre",
+        description = "Retorna una lista de naves cuyo nombre coincida (parcial o totalmente) con el valor proporcionado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Naves encontradas",
                     content = @Content(mediaType = "application/json",
@@ -65,7 +69,9 @@ public class StarshipsController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Listar todas las naves con paginación")
+    @Operation(
+        summary = "Listar todas las naves con paginación",
+        description = "Lista naves con soporte para paginación.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de naves",
             content = @Content(mediaType = "application/json",

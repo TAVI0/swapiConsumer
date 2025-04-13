@@ -1,4 +1,4 @@
-package com.marcos.starwarsapi.dto.external.starship.shortResponse;
+package com.marcos.starwarsapi.dto.external.vehicles.shortResponse;
 
 import com.marcos.starwarsapi.dto.external.person.shortResponse.SwapiPersonShortResult;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwapiStarshipsShortResponse {
+public class SwapiVehiclesShortResponse {
     private String message;
-    private List<SwapiStarshipShortResult> results;
+    private List<SwapiVehicleShortResult> results;
 }

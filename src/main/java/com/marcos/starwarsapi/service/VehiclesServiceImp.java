@@ -1,13 +1,17 @@
 package com.marcos.starwarsapi.service;
 
 import com.marcos.starwarsapi.dto.StarshipDTO;
-import com.marcos.starwarsapi.dto.external.person.SwapiPeopleResponse;
-import com.marcos.starwarsapi.dto.external.person.shortResponse.SwapiPeopleShortResponse;
+import com.marcos.starwarsapi.dto.VehicleDTO;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResponse;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
 import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
+import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleProperties;
+import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleResponse;
+import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleResult;
+import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehiclesResponse;
+import com.marcos.starwarsapi.dto.external.vehicles.shortResponse.SwapiVehiclesShortResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -23,14 +27,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class StarshipsServiceImp implements StarshipsService{
+public class VehiclesServiceImp implements VehiclesService{
 
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
     HttpEntity<String> entity;
 
-    public StarshipsServiceImp(RestTemplate restTemplate, @Value("${swapi.base-url}") String swapiBaseUrl) {
+    public VehiclesServiceImp(RestTemplate restTemplate, @Value("${swapi.base-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
         this.swapiBaseUrl = swapiBaseUrl;
 
@@ -39,70 +43,68 @@ public class StarshipsServiceImp implements StarshipsService{
         entity = new HttpEntity<>(headers);
     }
     @Override
-    public StarshipDTO getStarshipById(String id) {
-        String url = swapiBaseUrl + "starships/" + id;
+    public VehicleDTO getVehicleById(String id) {
+        String url = swapiBaseUrl + "vehicles/" + id;
         try {
-            ResponseEntity<SwapiStarshipResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipResponse.class);
-            SwapiStarshipResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiVehicleResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleResponse.class);
+            SwapiVehicleResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
-                return mapToStarshipDTO(response.getResult());
+                return mapToVehicleDTO(response.getResult());
             }
         } catch (Exception e) {
-            log.error("Error al obtener nave por id: " + id, e);
+            log.error("Error al obtener vehiculo por id: " + id, e);
         }
         return null;
     }
 
     @Override
-    public List<StarshipDTO> getStarships(int page, int limit) {
-        String url = swapiBaseUrl + "starships/?page=" + page + "&limit=" + limit;
+    public List<VehicleDTO> getVehicles(int page, int limit) {
+        String url = swapiBaseUrl + "vehicles/?page=" + page + "&limit=" + limit;
         try {
-            ResponseEntity<SwapiStarshipsShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipsShortResponse.class);
-            SwapiStarshipsShortResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiVehiclesShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesShortResponse.class);
+            SwapiVehiclesShortResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResults().stream()
-                        .map(result -> getStarshipById(result.getUid()))
+                        .map(result -> getVehicleById(result.getUid()))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {
-            log.error("Error al obtener lista de naves.", e);
+            log.error("Error al obtener lista de vehiculos.", e);
         }
         return null;
     }
 
     @Override
-    public List<StarshipDTO> getStarhipsByName(String name) {
+    public List<VehicleDTO> getVehiclesByName(String name) {
         String url = swapiBaseUrl + "starships/?name=" + name;
         try {
-            ResponseEntity<SwapiStarshipsResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipsResponse.class);
-            SwapiStarshipsResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiVehiclesResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesResponse.class);
+            SwapiVehiclesResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
-                        .map(this::mapToStarshipDTO)
+                        .map(this::mapToVehicleDTO)
                         .collect(Collectors.toList());
             }
         } catch (Exception e) {
-            log.error("Error al obtener lista de naves.", e);
+            log.error("Error al obtener lista de vehiculos.", e);
         }
         return null;
     }
 
-    private StarshipDTO mapToStarshipDTO(SwapiStarshipResult result){
-        SwapiStarshipProperties prop = result.getProperties();
-        StarshipDTO dto = new StarshipDTO();
+    private VehicleDTO mapToVehicleDTO(SwapiVehicleResult result){
+        SwapiVehicleProperties prop = result.getProperties();
+        VehicleDTO dto = new VehicleDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());
         dto.setModel(prop.getModel());
-        dto.setStarshipClass(prop.getStarship_class());
+        dto.setVehicleClass(prop.getVehicle_class());
         dto.setManufacturer(prop.getManufacturer());
         dto.setCostInCredits(prop.getCost_in_credits());
         dto.setLength(prop.getLength());
         dto.setCrew(prop.getCrew());
         dto.setPassengers(prop.getPassengers());
         dto.setMaxAtmospheringSpeed(prop.getMax_atmosphering_speed());
-        dto.setHyperdriveRating(prop.getHyperdrive_rating());
-        dto.setMGLT(prop.getMGLT());
         dto.setCargoCapacity(prop.getCargo_capacity());
         dto.setConsumables(prop.getConsumables());
         dto.setFilms(prop.getFilms());

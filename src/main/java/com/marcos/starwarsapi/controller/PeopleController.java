@@ -2,6 +2,7 @@ package com.marcos.starwarsapi.controller;
 
 import com.marcos.starwarsapi.dto.PersonDTO;
 import com.marcos.starwarsapi.service.PeopleService;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +28,13 @@ public class PeopleController {
 
     @Operation(
         summary = "Obtener persona por ID",
-        description = "Retorna una persona de Star Wars correspondiente al ID proporcionado.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Persona encontrada",
-                    content = @Content(schema = @Schema(implementation = PersonDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Persona no encontrada")
-        }
+        description = "Retorna una persona de Star Wars correspondiente al ID proporcionado."
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Persona encontrada",
+            content = @Content(schema = @Schema(implementation = PersonDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Persona no encontrada")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<PersonDTO> getPersonById(
             @Parameter(description = "ID de la persona")
@@ -47,13 +48,13 @@ public class PeopleController {
 
     @Operation(
         summary = "Buscar personas por nombre",
-        description = "Retorna una lista de personas cuyo nombre coincida (parcial o totalmente) con el valor proporcionado.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Lista de personas encontrada",
-                    content = @Content(schema = @Schema(implementation = PersonDTO.class))),
-            @ApiResponse(responseCode = "204", description = "No se encontraron personas")
-    }
+        description = "Retorna una lista de personas cuyo nombre coincida (parcial o totalmente) con el valor proporcionado."
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de personas encontrada",
+            content = @Content(schema = @Schema(implementation = PersonDTO.class))),
+        @ApiResponse(responseCode = "204", description = "No se encontraron personas")
+    })
     @GetMapping("/name/")
     public ResponseEntity<List<PersonDTO>> getPeopleByName(
             @RequestParam(required = false) String name) {
@@ -66,14 +67,14 @@ public class PeopleController {
     }
 
     @Operation(
-        summary = "Listar personas",
-        description = "Lista personas con soporte para paginación.",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Lista de personas encontrada",
-                    content = @Content(schema = @Schema(implementation = PersonDTO.class))),
-            @ApiResponse(responseCode = "204", description = "No se encontraron personas")
-        }
+        summary = "Listar personas con paginacion",
+        description = "Lista personas con soporte para paginación."
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de personas encontrada",
+            content = @Content(schema = @Schema(implementation = PersonDTO.class))),
+        @ApiResponse(responseCode = "204", description = "No se encontraron personas")
+    })
     @GetMapping()
     public ResponseEntity<List<PersonDTO>> getPeople(
             @Parameter(description = "Número de página (empezando en 1)")
