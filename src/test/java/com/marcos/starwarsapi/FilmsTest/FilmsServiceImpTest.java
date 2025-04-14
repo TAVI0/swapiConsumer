@@ -6,6 +6,7 @@ import com.marcos.starwarsapi.dto.external.film.SwapiFilmResponse;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmResult;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmsResponse;
 import com.marcos.starwarsapi.service.FilmsServiceImp;
+import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,8 @@ class FilmsServiceImpTest {
     @Mock
     private UtilsService utilsService;
 
+    @Mock
+    private CacheService cacheService;
     @InjectMocks
     private FilmsServiceImp filmsService;
 
@@ -44,11 +47,15 @@ class FilmsServiceImpTest {
     void setUp() {
         filmsService = new FilmsServiceImp(restTemplate, baseUrl);
         ReflectionTestUtils.setField(filmsService, "utilsService", utilsService);
+        ReflectionTestUtils.setField(filmsService, "cacheService", cacheService);
+
     }
 
     @Test
     void testGetFilmById_ReturnsFilmDTO_WhenFilmExists() {
         String filmId = "1";
+        when(cacheService.get("film_1", FilmDTO.class)).thenReturn(null);
+
         SwapiFilmProperties properties = new SwapiFilmProperties();
         properties.setTitle("A New Hope");
         properties.setEpisode_id(4);
