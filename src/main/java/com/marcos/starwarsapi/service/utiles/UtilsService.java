@@ -1,4 +1,4 @@
-package com.marcos.starwarsapi.service;
+package com.marcos.starwarsapi.service.utiles;
 
 import java.util.List;
 

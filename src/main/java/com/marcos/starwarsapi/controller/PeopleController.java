@@ -37,7 +37,7 @@ public class PeopleController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<PersonDTO> getPersonById(
-            @Parameter(description = "ID de la persona")
+            @Parameter(description = "ID de la persona", example = "2")
             @PathVariable String id) {
         PersonDTO person = peopleService.getPersonById(id);
         if (person != null) {
@@ -57,6 +57,7 @@ public class PeopleController {
     })
     @GetMapping("/name/")
     public ResponseEntity<List<PersonDTO>> getPeopleByName(
+            @Parameter(description = "Nombre del personaje a buscar", example = "Luke Skywalker")
             @RequestParam(required = false) String name) {
 
         List<PersonDTO> people = peopleService.getPeopleByName(name);
@@ -77,9 +78,9 @@ public class PeopleController {
     })
     @GetMapping()
     public ResponseEntity<List<PersonDTO>> getPeople(
-            @Parameter(description = "Número de página (empezando en 1)")
+            @Parameter(description = "Número de página (empezando en 1)", example = "1")
             @RequestParam(required = false, defaultValue = "1") int page,
-            @Parameter(description = "Cantidad de elementos por página")
+            @Parameter(description = "Cantidad de elementos por página", example = "10")
             @RequestParam(required = false, defaultValue = "10") int limit
             ) {
 

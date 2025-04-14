@@ -1,13 +1,12 @@
 package com.marcos.starwarsapi.service;
 
 import com.marcos.starwarsapi.dto.StarshipDTO;
-import com.marcos.starwarsapi.dto.external.person.SwapiPeopleResponse;
-import com.marcos.starwarsapi.dto.external.person.shortResponse.SwapiPeopleShortResponse;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResponse;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
 import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
+import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

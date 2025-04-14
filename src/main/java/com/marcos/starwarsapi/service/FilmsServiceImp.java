@@ -5,6 +5,7 @@ import com.marcos.starwarsapi.dto.external.film.SwapiFilmProperties;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmResponse;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmResult;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmsResponse;
+import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +56,6 @@ public class FilmsServiceImp implements FilmsService{
 
     @Override
     public List<FilmDTO> getFilms(int page, int limit) {
-       // String url = swapiBaseUrl + "films/?page=" + page + "&limit=" + limit;
         String url = swapiBaseUrl + "films/";
 
         try {

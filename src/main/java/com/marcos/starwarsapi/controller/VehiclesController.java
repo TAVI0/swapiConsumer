@@ -35,7 +35,7 @@ public class VehiclesController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<VehicleDTO> getVehicleById(
-            @Parameter(description = "ID de la vehiculo a buscar", example = "2")
+            @Parameter(description = "ID de la vehiculo a buscar", example = "4")
             @PathVariable String id) {
         VehicleDTO vehicle = vehiclesServices.getVehicleById(id);
         if(vehicle!=null){

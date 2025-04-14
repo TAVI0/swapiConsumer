@@ -11,9 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class FilmDTO {
     private String uid;
-    private List<String> starships;
-    private List<String> vehicles;
-    private List<String> planets;
     private String producer;
     private String title;
     private int episodeId;
@@ -21,6 +18,9 @@ public class FilmDTO {
     private String releaseDate;
     private String openingCrawl;
     private List<String> characters;
+    private List<String> starships;
+    private List<String> vehicles;
+    private List<String> planets;
     private List<String> species;
     private String created;
     private String edited;

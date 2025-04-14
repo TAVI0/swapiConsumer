@@ -1,7 +1,6 @@
 package com.marcos.starwarsapi.controller;
 
 import com.marcos.starwarsapi.dto.FilmDTO;
-import com.marcos.starwarsapi.dto.VehicleDTO;
 import com.marcos.starwarsapi.service.FilmsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +26,7 @@ public class FilmsController {
         this.filmsService = filmsService;
     }
 
+
     @Operation(summary = "Obtener una pelicula espacial por su ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Pelicula encontrada",
@@ -36,7 +37,7 @@ public class FilmsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<FilmDTO> getFilmById(
-            @Parameter(description = "ID de la vehiculo a buscar", example = "2")
+            @Parameter(description = "ID de la vehiculo a buscar", example = "1")
             @PathVariable String id) {
         FilmDTO film = filmsService.getFilmById(id);
         if(film!=null){
@@ -55,7 +56,7 @@ public class FilmsController {
     })
     @GetMapping("/name/")
     public ResponseEntity<List<FilmDTO>> getFilmsByTitle(
-        @Parameter(description = "Nombre de la pelicula a buscar", example = "CR90 corvette")
+        @Parameter(description = "Nombre de la pelicula a buscar", example = "A New Hope")
         @RequestParam(required = false) String title) {
 
         List<FilmDTO> films = filmsService.getFilmsByTitle(title);
@@ -74,13 +75,6 @@ public class FilmsController {
             content = @Content)
     })
     @GetMapping()
- /*   public ResponseEntity<List<FilmDTO>> getFilms(
-        @Parameter(description = "Número de página (empezando en 1)", example = "1")
-        @RequestParam(required = false, defaultValue = "1") int page,
-        @Parameter(description = "Cantidad de elementos por página", example = "10")
-        @RequestParam(required = false, defaultValue = "10") int limit
-    ) {
-   */
     public ResponseEntity<List<FilmDTO>> getFilms() {
         List<FilmDTO> films = filmsService.getFilms(0, 0);
         if(films!=null && !films.isEmpty()){

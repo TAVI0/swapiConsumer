@@ -6,6 +6,7 @@ import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResponse;
 import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResult;
 import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehiclesResponse;
 import com.marcos.starwarsapi.dto.external.vehicle.shortResponse.SwapiVehicleShortResponse;
+import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +76,7 @@ public class VehiclesServiceImp implements VehiclesService{
 
     @Override
     public List<VehicleDTO> getVehiclesByName(String name) {
-        String url = swapiBaseUrl + "starships/?name=" + name;
+        String url = swapiBaseUrl + "vehicles/?name=" + name;
         try {
             ResponseEntity<SwapiVehiclesResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesResponse.class);
             SwapiVehiclesResponse response = responseEntity.getBody();

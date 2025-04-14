@@ -53,14 +53,14 @@ public class StarshipsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Naves encontradas",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = StarshipDTO.class))),
+                    schema = @Schema(implementation = StarshipDTO.class))),
             @ApiResponse(responseCode = "204", description = "Sin resultados",
                     content = @Content)
     })
     @GetMapping("/name/")
     public ResponseEntity<List<StarshipDTO>> getPeopleByName(
             @Parameter(description = "Nombre de la nave a buscar", example = "CR90 corvette")
-            @RequestParam(required = false) String name) {
+            @RequestParam(required = true) String name) {
 
         List<StarshipDTO> starhips = starshipsService.getStarhipsByName(name);
         if (starhips != null && !starhips.isEmpty()) {
@@ -75,7 +75,7 @@ public class StarshipsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de naves",
             content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = StarshipDTO.class))),
+            schema = @Schema(implementation = StarshipDTO.class))),
         @ApiResponse(responseCode = "204", description = "Sin resultados",
             content = @Content)
     })

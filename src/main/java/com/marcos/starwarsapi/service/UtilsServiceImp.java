@@ -1,5 +1,6 @@
 package com.marcos.starwarsapi.service;
 
+import com.marcos.starwarsapi.service.utiles.UtilsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 
 @Service
-public class UtilsServiceImp implements UtilsService{
+public class UtilsServiceImp implements UtilsService {
     @Value("${swapi-url}")
     private String baseUrl;
 
