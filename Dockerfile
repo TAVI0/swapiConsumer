@@ -1,14 +1,12 @@
-# Imagen base con JDK 8
-FROM eclipse-temurin:8-jdk
-
-# Directorio de trabajo dentro del contenedor
+# Etapa 1: Construcción del jar usando Maven
+FROM maven:3.6.3-jdk-8 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copiamos el archivo JAR generado por Maven
-COPY target/*.jar app.jar
-
-# Exponemos el puerto 8080 (usado por Spring Boot)
+# Etapa 2: Ejecutar el jar en una imagen más liviana
+FROM openjdk:8-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando que inicia la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
