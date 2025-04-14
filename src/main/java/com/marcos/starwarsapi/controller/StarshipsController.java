@@ -1,5 +1,6 @@
 package com.marcos.starwarsapi.controller;
 
+import com.marcos.starwarsapi.dto.PaginatedEntity;
 import com.marcos.starwarsapi.dto.StarshipDTO;
 import com.marcos.starwarsapi.service.StarshipsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +23,9 @@ import java.util.List;
 @RequestMapping("/api/starships")
 public class StarshipsController {
 
-    private final StarshipsService starshipsService;
-
-    public StarshipsController(StarshipsService starshipsService) {
-        this.starshipsService = starshipsService;
-    }
+    @Autowired
+    private StarshipsService starshipsService;
+    @Value("${base-url}") String baseUrl;
 
     @Operation(
         summary = "Obtener una nave espacial por su ID",
@@ -80,7 +81,7 @@ public class StarshipsController {
             content = @Content)
     })
     @GetMapping()
-    public ResponseEntity<List<StarshipDTO>> getStarship(
+    public ResponseEntity<PaginatedEntity> getStarship(
         @Parameter(description = "Número de página (empezando en 1)", example = "1")
         @RequestParam(required = false, defaultValue = "1") int page,
         @Parameter(description = "Cantidad de elementos por página", example = "10")
@@ -88,7 +89,17 @@ public class StarshipsController {
     ) {
         List<StarshipDTO> starships = starshipsService.getStarships(page, limit);
         if(starships!=null && !starships.isEmpty()){
-            return ResponseEntity.ok(starships);
+            PaginatedEntity pe = new PaginatedEntity();
+            if(page>=2) {
+                int newpage = page - 1;
+                pe.setPreviousPage(baseUrl + "starships?page=" + newpage + "&limit="+limit);
+            }else{
+                pe.setPreviousPage(null);
+            }
+            int nexpage = page+1;
+            pe.setNextPage(baseUrl + "starships?page=" + nexpage + "&limit="+limit);
+            pe.setEntities(starships);
+            return ResponseEntity.ok(pe);
         }
         return ResponseEntity.noContent().build();
     }

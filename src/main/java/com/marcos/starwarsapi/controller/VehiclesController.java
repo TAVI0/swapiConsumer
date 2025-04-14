@@ -1,5 +1,6 @@
 package com.marcos.starwarsapi.controller;
 
+import com.marcos.starwarsapi.dto.PaginatedEntity;
 import com.marcos.starwarsapi.dto.VehicleDTO;
 import com.marcos.starwarsapi.service.VehiclesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,9 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Tag(name = "Vehicle", description = "Operaciones relacionadas con las vehiculos del universo Star Wars")
@@ -22,6 +25,7 @@ public class VehiclesController {
 
     @Autowired
     private VehiclesService vehiclesServices;
+    @Value("${base-url}") String baseUrl;
 
     @Operation(summary = "Obtener una vahiculo espacial por su ID")
     @ApiResponses(value = {
@@ -71,7 +75,7 @@ public class VehiclesController {
             content = @Content)
     })
     @GetMapping()
-    public ResponseEntity<List<VehicleDTO>> getVehicle(
+    public ResponseEntity<PaginatedEntity> getVehicle(
         @Parameter(description = "Número de página (empezando en 1)", example = "1")
         @RequestParam(required = false, defaultValue = "1") int page,
         @Parameter(description = "Cantidad de elementos por página", example = "10")
@@ -79,7 +83,17 @@ public class VehiclesController {
     ) {
         List<VehicleDTO> vehicles = vehiclesServices.getVehicles(page, limit);
         if(vehicles!=null && !vehicles.isEmpty()){
-            return ResponseEntity.ok(vehicles);
+            PaginatedEntity pe = new PaginatedEntity();
+            if(page>=2) {
+                int newpage = page - 1;
+                pe.setPreviousPage(baseUrl + "vehicles?page=" + newpage + "&limit="+limit);
+            }else{
+                pe.setPreviousPage(null);
+            }
+            int nexpage = page+1;
+            pe.setNextPage(baseUrl + "vehicles?page=" + nexpage + "&limit="+limit);
+            pe.setEntities(vehicles);
+            return ResponseEntity.ok(pe);
         }
         return ResponseEntity.noContent().build();
     }
