@@ -52,7 +52,7 @@ public class VehiclesController {
     })
     @GetMapping("/name/")
     public ResponseEntity<List<VehicleDTO>> getPeopleByName(
-            @Parameter(description = "Nombre de la nave a buscar", example = "CR90 corvette")
+            @Parameter(description = "Nombre de la nave a buscar", example = "Sand Crawler")
             @RequestParam(required = false) String name) {
 
         List<VehicleDTO> vehicles = vehiclesServices.getVehiclesByName(name);
