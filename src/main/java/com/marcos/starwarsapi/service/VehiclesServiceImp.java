@@ -1,18 +1,13 @@
 package com.marcos.starwarsapi.service;
 
-import com.marcos.starwarsapi.dto.StarshipDTO;
 import com.marcos.starwarsapi.dto.VehicleDTO;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResponse;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
-import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
-import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleProperties;
-import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleResponse;
-import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehicleResult;
-import com.marcos.starwarsapi.dto.external.vehicles.SwapiVehiclesResponse;
-import com.marcos.starwarsapi.dto.external.vehicles.shortResponse.SwapiVehiclesShortResponse;
+import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleProperties;
+import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResponse;
+import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResult;
+import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehiclesResponse;
+import com.marcos.starwarsapi.dto.external.vehicle.shortResponse.SwapiVehicleShortResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,12 +24,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class VehiclesServiceImp implements VehiclesService{
 
+    @Autowired
+    private UtilsService utilsService;
+
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
     HttpEntity<String> entity;
 
-    public VehiclesServiceImp(RestTemplate restTemplate, @Value("${swapi.base-url}") String swapiBaseUrl) {
+    public VehiclesServiceImp(RestTemplate restTemplate, @Value("${swapi-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
         this.swapiBaseUrl = swapiBaseUrl;
 
@@ -61,8 +59,8 @@ public class VehiclesServiceImp implements VehiclesService{
     public List<VehicleDTO> getVehicles(int page, int limit) {
         String url = swapiBaseUrl + "vehicles/?page=" + page + "&limit=" + limit;
         try {
-            ResponseEntity<SwapiVehiclesShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesShortResponse.class);
-            SwapiVehiclesShortResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiVehicleShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleShortResponse.class);
+            SwapiVehicleShortResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResults().stream()
                         .map(result -> getVehicleById(result.getUid()))
@@ -107,7 +105,7 @@ public class VehiclesServiceImp implements VehiclesService{
         dto.setMaxAtmospheringSpeed(prop.getMax_atmosphering_speed());
         dto.setCargoCapacity(prop.getCargo_capacity());
         dto.setConsumables(prop.getConsumables());
-        dto.setFilms(prop.getFilms());
+        dto.setFilms(utilsService.transformUrls(prop.getFilms()));
         return dto;
     }
 }

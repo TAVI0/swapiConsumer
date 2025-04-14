@@ -9,6 +9,7 @@ import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
 import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,12 +26,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class StarshipsServiceImp implements StarshipsService{
 
+    @Autowired
+    private UtilsService utilsService;
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
     HttpEntity<String> entity;
 
-    public StarshipsServiceImp(RestTemplate restTemplate, @Value("${swapi.base-url}") String swapiBaseUrl) {
+    public StarshipsServiceImp(RestTemplate restTemplate, @Value("${swapi-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
         this.swapiBaseUrl = swapiBaseUrl;
 
@@ -105,7 +108,7 @@ public class StarshipsServiceImp implements StarshipsService{
         dto.setMGLT(prop.getMGLT());
         dto.setCargoCapacity(prop.getCargo_capacity());
         dto.setConsumables(prop.getConsumables());
-        dto.setFilms(prop.getFilms());
+        dto.setFilms(utilsService.transformUrls(prop.getFilms()));
         return dto;
     }
 }

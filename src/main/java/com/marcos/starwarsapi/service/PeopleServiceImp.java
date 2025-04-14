@@ -27,7 +27,7 @@ public class PeopleServiceImp implements PeopleService {
     private final String swapiBaseUrl;
     HttpHeaders headers;
     HttpEntity<String> entity;
-    public PeopleServiceImp(RestTemplate restTemplate, @Value("${swapi.base-url}") String swapiBaseUrl) {
+    public PeopleServiceImp(RestTemplate restTemplate, @Value("${swapi-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
         this.swapiBaseUrl = swapiBaseUrl;
 

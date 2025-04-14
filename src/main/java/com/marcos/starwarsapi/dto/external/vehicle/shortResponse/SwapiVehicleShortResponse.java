@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwapiVehiclesShortResponse {
+public class SwapiVehicleShortResponse {
     private String message;
     private List<SwapiVehicleShortResult> results;
 }

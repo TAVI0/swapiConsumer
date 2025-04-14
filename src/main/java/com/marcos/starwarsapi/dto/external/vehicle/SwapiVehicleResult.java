@@ -1,6 +1,5 @@
-package com.marcos.starwarsapi.dto.external.vehicles;
+package com.marcos.starwarsapi.dto.external.vehicle;
 
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
 import lombok.Data;
 
 @Data

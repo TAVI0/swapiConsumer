@@ -1,11 +1,11 @@
-package com.marcos.starwarsapi.dto.external.vehicle;
+package com.marcos.starwarsapi.dto.external.film;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class SwapiVehiclesResponse {
+public class SwapiFilmsResponse {
     private String message;
-    private List<SwapiVehicleResult> result;
+    private List<SwapiFilmResult> result;
 }

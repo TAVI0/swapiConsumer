@@ -1,4 +1,4 @@
-package com.marcos.starwarsapi.dto.external.vehicles.shortResponse;
+package com.marcos.starwarsapi.dto.external.vehicle.shortResponse;
 
 import lombok.Data;
 
