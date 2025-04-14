@@ -1,11 +1,13 @@
 package com.marcos.starwarsapi.service;
 
 import com.marcos.starwarsapi.dto.StarshipDTO;
+import com.marcos.starwarsapi.dto.VehicleDTO;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResponse;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
 import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
 import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
+import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class StarshipsServiceImp implements StarshipsService{
 
     @Autowired
     private UtilsService utilsService;
+    @Autowired
+    private CacheService cacheService;
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
@@ -42,12 +46,20 @@ public class StarshipsServiceImp implements StarshipsService{
     }
     @Override
     public StarshipDTO getStarshipById(String id) {
+        String cacheKey = "vehicle_" + id;
+        StarshipDTO dataCached = cacheService.get(cacheKey, StarshipDTO.class);
+        if (dataCached != null) {
+            return dataCached;
+        }
+
         String url = swapiBaseUrl + "starships/" + id;
         try {
             ResponseEntity<SwapiStarshipResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipResponse.class);
             SwapiStarshipResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
-                return mapToStarshipDTO(response.getResult());
+                dataCached = mapToStarshipDTO(response.getResult());
+                cacheService.put(cacheKey, dataCached);
+                return dataCached;
             }
         } catch (Exception e) {
             log.error("Error al obtener nave por id: " + id, e);

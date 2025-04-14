@@ -3,6 +3,7 @@ package com.marcos.starwarsapi.controller;
 import com.marcos.starwarsapi.dto.PersonDTO;
 import com.marcos.starwarsapi.service.PeopleService;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,8 @@ import java.util.List;
 @RequestMapping("/api/people")
 public class PeopleController {
 
-    private final PeopleService peopleService;
+    @Autowired
+    private PeopleService peopleService;
 
     public PeopleController(PeopleService peopleService) {
         this.peopleService = peopleService;

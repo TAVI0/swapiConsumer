@@ -6,6 +6,7 @@ import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResponse;
 import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResult;
 import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehiclesResponse;
 import com.marcos.starwarsapi.dto.external.vehicle.shortResponse.SwapiVehicleShortResponse;
+import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class VehiclesServiceImp implements VehiclesService{
 
     @Autowired
     private UtilsService utilsService;
-
+    @Autowired
+    private CacheService cacheService;
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
@@ -35,7 +37,7 @@ public class VehiclesServiceImp implements VehiclesService{
 
     public VehiclesServiceImp(RestTemplate restTemplate, @Value("${swapi-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
-        this.swapiBaseUrl = swapiBaseUrl;
+        this.swapiBaseUrl = swapiBaseUrl+ "vehicles/";
 
         headers = new HttpHeaders();
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
@@ -43,12 +45,20 @@ public class VehiclesServiceImp implements VehiclesService{
     }
     @Override
     public VehicleDTO getVehicleById(String id) {
-        String url = swapiBaseUrl + "vehicles/" + id;
+        String cacheKey = "vehicle_" + id;
+        VehicleDTO dataCached = cacheService.get(cacheKey, VehicleDTO.class);
+        if (dataCached != null) {
+            return dataCached;
+        }
+
+        String url = swapiBaseUrl + id;
         try {
             ResponseEntity<SwapiVehicleResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleResponse.class);
             SwapiVehicleResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
-                return mapToVehicleDTO(response.getResult());
+                dataCached = mapToVehicleDTO(response.getResult());
+                cacheService.put(cacheKey, dataCached);
+                return dataCached;
             }
         } catch (Exception e) {
             log.error("Error al obtener vehiculo por id: " + id, e);
@@ -58,7 +68,7 @@ public class VehiclesServiceImp implements VehiclesService{
 
     @Override
     public List<VehicleDTO> getVehicles(int page, int limit) {
-        String url = swapiBaseUrl + "vehicles/?page=" + page + "&limit=" + limit;
+        String url = swapiBaseUrl + "?page=" + page + "&limit=" + limit;
         try {
             ResponseEntity<SwapiVehicleShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleShortResponse.class);
             SwapiVehicleShortResponse response = responseEntity.getBody();
@@ -76,7 +86,7 @@ public class VehiclesServiceImp implements VehiclesService{
 
     @Override
     public List<VehicleDTO> getVehiclesByName(String name) {
-        String url = swapiBaseUrl + "vehicles/?name=" + name;
+        String url = swapiBaseUrl + "?name=" + name;
         try {
             ResponseEntity<SwapiVehiclesResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesResponse.class);
             SwapiVehiclesResponse response = responseEntity.getBody();

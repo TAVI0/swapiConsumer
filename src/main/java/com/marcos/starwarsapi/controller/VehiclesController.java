@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +20,8 @@ import java.util.List;
 @RequestMapping("/api/vehicles")
 public class VehiclesController {
 
-    private final VehiclesService vehiclesServices;
-
-    public VehiclesController(VehiclesService vehiclesServices) {
-        this.vehiclesServices = vehiclesServices;
-    }
+    @Autowired
+    private VehiclesService vehiclesServices;
 
     @Operation(summary = "Obtener una vahiculo espacial por su ID")
     @ApiResponses(value = {

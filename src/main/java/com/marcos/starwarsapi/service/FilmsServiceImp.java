@@ -5,6 +5,7 @@ import com.marcos.starwarsapi.dto.external.film.SwapiFilmProperties;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmResponse;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmResult;
 import com.marcos.starwarsapi.dto.external.film.SwapiFilmsResponse;
+import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,8 @@ public class FilmsServiceImp implements FilmsService{
 
     @Autowired
     private UtilsService utilsService;
-
+    @Autowired
+    private CacheService cacheService;
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
@@ -33,7 +35,7 @@ public class FilmsServiceImp implements FilmsService{
 
     public FilmsServiceImp(RestTemplate restTemplate, @Value("${swapi-url}") String swapiBaseUrl) {
         this.restTemplate = restTemplate;
-        this.swapiBaseUrl = swapiBaseUrl;
+        this.swapiBaseUrl = swapiBaseUrl + "films/";
 
         headers = new HttpHeaders();
         headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
@@ -41,12 +43,20 @@ public class FilmsServiceImp implements FilmsService{
     }
     @Override
     public FilmDTO getFilmById(String id) {
-        String url = swapiBaseUrl + "films/" + id;
+        String cacheKey = "film_" + id;
+        FilmDTO dataCached = cacheService.get(cacheKey, FilmDTO.class);
+        if (dataCached != null) {
+            return dataCached;
+        }
+
+        String url = swapiBaseUrl + id;
         try {
             ResponseEntity<SwapiFilmResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiFilmResponse.class);
             SwapiFilmResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
-                return mapToFilmDTO(response.getResult());
+                dataCached = mapToFilmDTO(response.getResult());
+                cacheService.put(cacheKey, dataCached);
+                return dataCached;
             }
         } catch (Exception e) {
             log.error("Error al obtener pelicula por id: " + id, e);
@@ -56,10 +66,8 @@ public class FilmsServiceImp implements FilmsService{
 
     @Override
     public List<FilmDTO> getFilms(int page, int limit) {
-        String url = swapiBaseUrl + "films/";
-
         try {
-            ResponseEntity<SwapiFilmsResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiFilmsResponse.class);
+            ResponseEntity<SwapiFilmsResponse> responseEntity = restTemplate.exchange(swapiBaseUrl, HttpMethod.GET, entity, SwapiFilmsResponse.class);
             SwapiFilmsResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
@@ -74,7 +82,7 @@ public class FilmsServiceImp implements FilmsService{
 
     @Override
     public List<FilmDTO> getFilmsByTitle(String title) {
-        String url = swapiBaseUrl + "films/?title=" + title;
+        String url = swapiBaseUrl + "?title=" + title;
         try {
             ResponseEntity<SwapiFilmsResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiFilmsResponse.class);
             SwapiFilmsResponse response = responseEntity.getBody();

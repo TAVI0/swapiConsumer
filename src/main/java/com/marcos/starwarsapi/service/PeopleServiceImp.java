@@ -6,7 +6,9 @@ import com.marcos.starwarsapi.dto.external.person.SwapiPersonProperties;
 import com.marcos.starwarsapi.dto.external.person.SwapiPersonResponse;
 import com.marcos.starwarsapi.dto.external.person.SwapiPersonResult;
 import com.marcos.starwarsapi.dto.external.person.shortResponse.SwapiPeopleShortResponse;
+import com.marcos.starwarsapi.service.utiles.CacheService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PeopleServiceImp implements PeopleService {
 
+    @Autowired
+    private CacheService cacheService;
+
     private final RestTemplate restTemplate;
     private final String swapiBaseUrl;
     HttpHeaders headers;
@@ -38,12 +43,20 @@ public class PeopleServiceImp implements PeopleService {
 
     @Override
     public PersonDTO getPersonById(String id) {
+        String cacheKey = "person_" + id;
+        PersonDTO dataCached = cacheService.get(cacheKey, PersonDTO.class);
+        if (dataCached != null) {
+            return dataCached;
+        }
+
         String url = swapiBaseUrl + "people/" + id;
         try {
             ResponseEntity<SwapiPersonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPersonResponse.class);
             SwapiPersonResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
-                return mapToPersonDTO(response.getResult());
+                dataCached =  mapToPersonDTO(response.getResult());
+                cacheService.put(cacheKey, dataCached);
+                return dataCached;
             }
         } catch (Exception e) {
             log.error("Error al obtener persona por id: " + id, e);

@@ -20,12 +20,8 @@ import java.util.List;
 @RequestMapping("/api/films")
 public class FilmsController {
 
-    private final FilmsService filmsService;
-
-    public FilmsController(FilmsService filmsService) {
-        this.filmsService = filmsService;
-    }
-
+    @Autowired
+    private FilmsService filmsService;
 
     @Operation(summary = "Obtener una pelicula espacial por su ID")
     @ApiResponses(value = {
