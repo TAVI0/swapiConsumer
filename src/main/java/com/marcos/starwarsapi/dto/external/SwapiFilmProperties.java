@@ -1,4 +1,4 @@
-package com.marcos.starwarsapi.dto.external.film;
+package com.marcos.starwarsapi.dto.external;
 
 import lombok.Data;
 

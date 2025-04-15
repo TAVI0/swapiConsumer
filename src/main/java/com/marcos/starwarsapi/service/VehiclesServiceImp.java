@@ -1,11 +1,13 @@
 package com.marcos.starwarsapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.VehicleDTO;
-import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleProperties;
-import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResponse;
-import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehicleResult;
-import com.marcos.starwarsapi.dto.external.vehicle.SwapiVehiclesResponse;
-import com.marcos.starwarsapi.dto.external.vehicle.shortResponse.SwapiVehicleShortResponse;
+
+import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiShortResponse;
+import com.marcos.starwarsapi.dto.external.SwapiVehicleProperties;
 import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class VehiclesServiceImp implements VehiclesService{
-
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private UtilsService utilsService;
     @Autowired
@@ -53,8 +56,8 @@ public class VehiclesServiceImp implements VehiclesService{
 
         String url = swapiBaseUrl + id;
         try {
-            ResponseEntity<SwapiVehicleResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleResponse.class);
-            SwapiVehicleResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiResponse.class);
+            SwapiResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 dataCached = mapToVehicleDTO(response.getResult());
                 cacheService.put(cacheKey, dataCached);
@@ -70,8 +73,8 @@ public class VehiclesServiceImp implements VehiclesService{
     public List<VehicleDTO> getVehicles(int page, int limit) {
         String url = swapiBaseUrl + "?page=" + page + "&limit=" + limit;
         try {
-            ResponseEntity<SwapiVehicleShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehicleShortResponse.class);
-            SwapiVehicleShortResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiShortResponse.class);
+            SwapiShortResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResults().stream()
                         .map(result -> getVehicleById(result.getUid()))
@@ -88,8 +91,8 @@ public class VehiclesServiceImp implements VehiclesService{
     public List<VehicleDTO> getVehiclesByName(String name) {
         String url = swapiBaseUrl + "?name=" + name;
         try {
-            ResponseEntity<SwapiVehiclesResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiVehiclesResponse.class);
-            SwapiVehiclesResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiListResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiListResponse.class);
+            SwapiListResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
                         .map(this::mapToVehicleDTO)
@@ -101,8 +104,8 @@ public class VehiclesServiceImp implements VehiclesService{
         return null;
     }
 
-    private VehicleDTO mapToVehicleDTO(SwapiVehicleResult result){
-        SwapiVehicleProperties prop = result.getProperties();
+    private VehicleDTO mapToVehicleDTO(SwapiResult result){
+        SwapiVehicleProperties prop = objectMapper.convertValue(result.getProperties(), SwapiVehicleProperties.class);
         VehicleDTO dto = new VehicleDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());

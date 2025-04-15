@@ -1,4 +1,4 @@
-package com.marcos.starwarsapi.dto.external.person;
+package com.marcos.starwarsapi.dto.external;
 
 import lombok.Data;
 

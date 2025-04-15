@@ -1,12 +1,12 @@
 package com.marcos.starwarsapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.StarshipDTO;
-import com.marcos.starwarsapi.dto.VehicleDTO;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipProperties;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResponse;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipResult;
-import com.marcos.starwarsapi.dto.external.starship.SwapiStarshipsResponse;
-import com.marcos.starwarsapi.dto.external.starship.shortResponse.SwapiStarshipsShortResponse;
+import com.marcos.starwarsapi.dto.external.SwapiStarshipProperties;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiShortResponse;
 import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class StarshipsServiceImp implements StarshipsService{
-
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private UtilsService utilsService;
     @Autowired
@@ -54,8 +55,8 @@ public class StarshipsServiceImp implements StarshipsService{
 
         String url = swapiBaseUrl + "starships/" + id;
         try {
-            ResponseEntity<SwapiStarshipResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipResponse.class);
-            SwapiStarshipResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiResponse.class);
+            SwapiResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 dataCached = mapToStarshipDTO(response.getResult());
                 cacheService.put(cacheKey, dataCached);
@@ -71,8 +72,8 @@ public class StarshipsServiceImp implements StarshipsService{
     public List<StarshipDTO> getStarships(int page, int limit) {
         String url = swapiBaseUrl + "starships/?page=" + page + "&limit=" + limit;
         try {
-            ResponseEntity<SwapiStarshipsShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipsShortResponse.class);
-            SwapiStarshipsShortResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiShortResponse.class);
+            SwapiShortResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResults().stream()
                         .map(result -> getStarshipById(result.getUid()))
@@ -89,8 +90,8 @@ public class StarshipsServiceImp implements StarshipsService{
     public List<StarshipDTO> getStarhipsByName(String name) {
         String url = swapiBaseUrl + "starships/?name=" + name;
         try {
-            ResponseEntity<SwapiStarshipsResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiStarshipsResponse.class);
-            SwapiStarshipsResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiListResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiListResponse.class);
+            SwapiListResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
                         .map(this::mapToStarshipDTO)
@@ -102,8 +103,8 @@ public class StarshipsServiceImp implements StarshipsService{
         return null;
     }
 
-    private StarshipDTO mapToStarshipDTO(SwapiStarshipResult result){
-        SwapiStarshipProperties prop = result.getProperties();
+    private StarshipDTO mapToStarshipDTO(SwapiResult result){
+        SwapiStarshipProperties prop = objectMapper.convertValue(result.getProperties(), SwapiStarshipProperties.class);
         StarshipDTO dto = new StarshipDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());

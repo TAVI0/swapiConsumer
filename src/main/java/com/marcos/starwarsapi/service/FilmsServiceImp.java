@@ -1,10 +1,11 @@
 package com.marcos.starwarsapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.FilmDTO;
-import com.marcos.starwarsapi.dto.external.film.SwapiFilmProperties;
-import com.marcos.starwarsapi.dto.external.film.SwapiFilmResponse;
-import com.marcos.starwarsapi.dto.external.film.SwapiFilmResult;
-import com.marcos.starwarsapi.dto.external.film.SwapiFilmsResponse;
+import com.marcos.starwarsapi.dto.external.SwapiFilmProperties;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
 import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmsServiceImp implements FilmsService{
 
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private UtilsService utilsService;
     @Autowired
@@ -51,8 +54,8 @@ public class FilmsServiceImp implements FilmsService{
 
         String url = swapiBaseUrl + id;
         try {
-            ResponseEntity<SwapiFilmResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiFilmResponse.class);
-            SwapiFilmResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiResponse.class);
+            SwapiResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 dataCached = mapToFilmDTO(response.getResult());
                 cacheService.put(cacheKey, dataCached);
@@ -67,8 +70,8 @@ public class FilmsServiceImp implements FilmsService{
     @Override
     public List<FilmDTO> getFilms(int page, int limit) {
         try {
-            ResponseEntity<SwapiFilmsResponse> responseEntity = restTemplate.exchange(swapiBaseUrl, HttpMethod.GET, entity, SwapiFilmsResponse.class);
-            SwapiFilmsResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiListResponse> responseEntity = restTemplate.exchange(swapiBaseUrl, HttpMethod.GET, entity, SwapiListResponse.class);
+            SwapiListResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
                         .map(this::mapToFilmDTO)
@@ -84,8 +87,8 @@ public class FilmsServiceImp implements FilmsService{
     public List<FilmDTO> getFilmsByTitle(String title) {
         String url = swapiBaseUrl + "?title=" + title;
         try {
-            ResponseEntity<SwapiFilmsResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiFilmsResponse.class);
-            SwapiFilmsResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiListResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiListResponse.class);
+            SwapiListResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
                         .map(this::mapToFilmDTO)
@@ -97,8 +100,8 @@ public class FilmsServiceImp implements FilmsService{
         return null;
     }
 
-    private FilmDTO mapToFilmDTO(SwapiFilmResult result){
-        SwapiFilmProperties prop = result.getProperties();
+    private FilmDTO mapToFilmDTO(SwapiResult result){
+        SwapiFilmProperties prop = objectMapper.convertValue(result.getProperties(), SwapiFilmProperties.class);
         FilmDTO dto = new FilmDTO();
         dto.setUid(result.getUid());
         dto.setStarships(utilsService.transformUrls(prop.getStarships()));

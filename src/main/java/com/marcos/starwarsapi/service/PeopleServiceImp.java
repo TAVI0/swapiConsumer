@@ -1,11 +1,12 @@
 package com.marcos.starwarsapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.PersonDTO;
-import com.marcos.starwarsapi.dto.external.person.SwapiPeopleResponse;
-import com.marcos.starwarsapi.dto.external.person.SwapiPersonProperties;
-import com.marcos.starwarsapi.dto.external.person.SwapiPersonResponse;
-import com.marcos.starwarsapi.dto.external.person.SwapiPersonResult;
-import com.marcos.starwarsapi.dto.external.person.shortResponse.SwapiPeopleShortResponse;
+import com.marcos.starwarsapi.dto.external.SwapiPersonProperties;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
+import com.marcos.starwarsapi.dto.external.swapi.SwapiShortResponse;
 import com.marcos.starwarsapi.service.utiles.CacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PeopleServiceImp implements PeopleService {
 
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private CacheService cacheService;
 
@@ -51,8 +54,8 @@ public class PeopleServiceImp implements PeopleService {
 
         String url = swapiBaseUrl + "people/" + id;
         try {
-            ResponseEntity<SwapiPersonResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPersonResponse.class);
-            SwapiPersonResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiResponse.class);
+            SwapiResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 dataCached =  mapToPersonDTO(response.getResult());
                 cacheService.put(cacheKey, dataCached);
@@ -69,8 +72,8 @@ public class PeopleServiceImp implements PeopleService {
     public List<PersonDTO> getPeople(int page, int limit) {
         String url = swapiBaseUrl + "people/?page=" + page + "&limit=" + limit;
         try {
-            ResponseEntity<SwapiPeopleShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPeopleShortResponse.class);
-            SwapiPeopleShortResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiShortResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiShortResponse.class);
+            SwapiShortResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResults().stream()
                         .map(result -> getPersonById(result.getUid()))
@@ -87,8 +90,8 @@ public class PeopleServiceImp implements PeopleService {
     public List<PersonDTO> getPeopleByName(String name) {
         String url = swapiBaseUrl + "people/?name=" + name;
         try {
-            ResponseEntity<SwapiPeopleResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiPeopleResponse.class);
-            SwapiPeopleResponse response = responseEntity.getBody();
+            ResponseEntity<SwapiListResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, SwapiListResponse.class);
+            SwapiListResponse response = responseEntity.getBody();
             if (response != null && "ok".equalsIgnoreCase(response.getMessage())) {
                 return response.getResult().stream()
                         .map(this::mapToPersonDTO)
@@ -100,8 +103,8 @@ public class PeopleServiceImp implements PeopleService {
         return null;
     }
 
-    private PersonDTO mapToPersonDTO(SwapiPersonResult result) {
-        SwapiPersonProperties prop = result.getProperties();
+    private PersonDTO mapToPersonDTO(SwapiResult result) {
+        SwapiPersonProperties prop = objectMapper.convertValue(result.getProperties(), SwapiPersonProperties.class);
         PersonDTO dto = new PersonDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());
