@@ -2,7 +2,7 @@ package com.marcos.starwarsapi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.PersonDTO;
-import com.marcos.starwarsapi.dto.external.SwapiPersonProperties;
+import com.marcos.starwarsapi.dto.external.PersonProperties;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
@@ -104,7 +104,7 @@ public class PeopleServiceImp implements PeopleService {
     }
 
     private PersonDTO mapToPersonDTO(SwapiResult result) {
-        SwapiPersonProperties prop = objectMapper.convertValue(result.getProperties(), SwapiPersonProperties.class);
+        PersonProperties prop = objectMapper.convertValue(result.getProperties(), PersonProperties.class);
         PersonDTO dto = new PersonDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());

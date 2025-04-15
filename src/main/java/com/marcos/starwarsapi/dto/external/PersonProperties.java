@@ -3,7 +3,7 @@ package com.marcos.starwarsapi.dto.external;
 import lombok.Data;
 
 @Data
-public class SwapiPersonProperties {
+public class PersonProperties {
     private String name;
     private String gender;
     private String skin_color;

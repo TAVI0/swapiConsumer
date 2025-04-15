@@ -7,7 +7,7 @@ import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiShortResponse;
-import com.marcos.starwarsapi.dto.external.SwapiVehicleProperties;
+import com.marcos.starwarsapi.dto.external.VehicleProperties;
 import com.marcos.starwarsapi.service.utiles.CacheService;
 import com.marcos.starwarsapi.service.utiles.UtilsService;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +105,7 @@ public class VehiclesServiceImp implements VehiclesService{
     }
 
     private VehicleDTO mapToVehicleDTO(SwapiResult result){
-        SwapiVehicleProperties prop = objectMapper.convertValue(result.getProperties(), SwapiVehicleProperties.class);
+        VehicleProperties prop = objectMapper.convertValue(result.getProperties(), VehicleProperties.class);
         VehicleDTO dto = new VehicleDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwapiFilmProperties {
+public class FilmProperties {
     private List<String> starships;
     private List<String> vehicles;
     private List<String> planets;

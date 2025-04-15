@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwapiVehicleProperties {
+public class VehicleProperties {
     private String name;
     private String model;
     private String vehicle_class;

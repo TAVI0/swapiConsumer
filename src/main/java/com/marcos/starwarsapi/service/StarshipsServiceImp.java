@@ -2,7 +2,7 @@ package com.marcos.starwarsapi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.StarshipDTO;
-import com.marcos.starwarsapi.dto.external.SwapiStarshipProperties;
+import com.marcos.starwarsapi.dto.external.StarshipProperties;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
@@ -104,7 +104,7 @@ public class StarshipsServiceImp implements StarshipsService{
     }
 
     private StarshipDTO mapToStarshipDTO(SwapiResult result){
-        SwapiStarshipProperties prop = objectMapper.convertValue(result.getProperties(), SwapiStarshipProperties.class);
+        StarshipProperties prop = objectMapper.convertValue(result.getProperties(), StarshipProperties.class);
         StarshipDTO dto = new StarshipDTO();
         dto.setUid(result.getUid());
         dto.setName(prop.getName());

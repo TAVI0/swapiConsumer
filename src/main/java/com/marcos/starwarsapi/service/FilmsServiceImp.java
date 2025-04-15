@@ -2,7 +2,7 @@ package com.marcos.starwarsapi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcos.starwarsapi.dto.FilmDTO;
-import com.marcos.starwarsapi.dto.external.SwapiFilmProperties;
+import com.marcos.starwarsapi.dto.external.FilmProperties;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiListResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResponse;
 import com.marcos.starwarsapi.dto.external.swapi.SwapiResult;
@@ -101,7 +101,7 @@ public class FilmsServiceImp implements FilmsService{
     }
 
     private FilmDTO mapToFilmDTO(SwapiResult result){
-        SwapiFilmProperties prop = objectMapper.convertValue(result.getProperties(), SwapiFilmProperties.class);
+        FilmProperties prop = objectMapper.convertValue(result.getProperties(), FilmProperties.class);
         FilmDTO dto = new FilmDTO();
         dto.setUid(result.getUid());
         dto.setStarships(utilsService.transformUrls(prop.getStarships()));

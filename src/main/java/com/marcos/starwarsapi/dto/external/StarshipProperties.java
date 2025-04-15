@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SwapiStarshipProperties {
+public class StarshipProperties {
     private String name;
     private String model;
     private String starship_class;
