@@ -4,7 +4,7 @@
 
 API REST en **Java 8+** y **Spring Boot 3** que actúa como puente entre tu aplicación y la **Star Wars API** ([swapi.tech](https://www.swapi.tech/)). Proporciona endpoints propios, documentación Swagger y autenticación básica.
 
-> **Demo en producción**: [https://swapiconsumer.onrender.com/](https://swapiconsumer.onrender.com/)
+> **Demo en producción**: [https://swapiconsumer.onrender.com/swagger-ui/index.html](https://swapiconsumer.onrender.com/swagger-ui/index.html)
 
 ---
 
